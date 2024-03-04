@@ -1,0 +1,163 @@
+
+-----------------------------------------------------------------------------------
+
+CREATE DATABASE aladin_mart;
+
+USE aladin_mart;
+
+CREATE TABLE users (
+    id INT AUTO_INCREMENT,
+    user_first_name VARCHAR(30) NOT NULL,
+    user_last_name VARCHAR(30) NOT NULL,
+    user_password VARCHAR(20) NOT NULL,
+    user_email VARCHAR(30) NOT NULL,
+    user_number VARCHAR(15) DEFAULT NULL,
+    user_type VARCHAR(8) NOT NULL,
+    user_shop_name VARCHAR(30) DEFAULT NULL,
+    profile_status BOOLEAN DEFAULT 0,
+    profile_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id)
+);
+
+
+INSERT INTO users (user_first_name, user_last_name, user_password, user_email, user_number, user_type) VALUES
+ ('john', '117', 'masterchief', 'halo@gmail.com', '+880-1521412031', 'admin');
+
+
+ CREATE TABLE categories (
+	  id INT AUTO_INCREMENT,
+    category_name VARCHAR(30) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE subcategories (
+	  id INT AUTO_INCREMENT,
+    sub_category_name VARCHAR(30) NOT NULL,
+    category_id INT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (category_id)
+		REFERENCES categories (id)
+);
+
+
+CREATE TABLE products (
+	  id INT AUTO_INCREMENT,
+    vendor_id INT NOT NULL,
+	  product_title VARCHAR(100) NOT NULL,
+    subcategory_id INT NOT NULL,
+    product_wholesale_price FLOAT NOT NULL,
+    product_retail_price FLOAT NOT NULL,
+    product_brandname VARCHAR(100),
+    product_sku VARCHAR(255),
+    product_quantity INT NOT NULL,
+    product_warranty INT DEFAULT 0,
+    product_sold INT DEFAULT 0,
+    product_description TEXT,
+    product_specification TEXT,
+    product_image_location VARCHAR(255) NOT NULL,
+    product_created DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    FOREIGN KEY (vendor_id)
+		REFERENCES users (id),
+    FOREIGN KEY (subcategory_id)
+		REFERENCES subcategories (id)
+ );
+
+CREATE TABLE reviews (
+	  product_id INT NOT NULL,
+    product_1_star_count INT DEFAULT 1,
+    product_2_star_count INT DEFAULT 0,
+    product_3_star_count INT DEFAULT 0,
+    product_4_star_count INT DEFAULT 0,
+    product_5_star_count INT DEFAULT 0,
+    FOREIGN KEY (product_id)
+		REFERENCES products (id)
+);
+
+
+CREATE TABLE review_messages (
+	  id INT AUTO_INCREMENT,
+    reviewer_id INT NOT NULL,
+    product_id INT NOT NULL,
+    review_value INT NOT NULL,
+	  review_message VARCHAR(255) NOT NULL,
+       PRIMARY KEY (id),
+    FOREIGN KEY (product_id)
+		REFERENCES products (id),
+	  FOREIGN KEY (reviewer_id)
+		REFERENCES users (id)
+	);
+
+
+CREATE TABLE questions_and_answers (
+	  id INT AUTO_INCREMENT,
+    customer_id INT NOT NULL,
+    vendor_id INT NOT NULL,
+    product_id INT NOT NULL,
+    question VARCHAR(255) NOT NULL,
+    answer VARCHAR(255) DEFAULT 'no_answer',
+    PRIMARY KEY (id),
+    FOREIGN KEY (product_id)
+		REFERENCES products (id),
+	  FOREIGN KEY (customer_id)
+		REFERENCES users (id),
+	  FOREIGN KEY (vendor_id)
+		REFERENCES users (id)
+);
+
+
+CREATE TABLE districts (
+    id INT AUTO_INCREMENT,
+    district_name VARCHAR(12) NOT NULL,
+    PRIMARY KEY (id)
+);
+
+
+CREATE TABLE product_delivery_locations (
+	  product_id INT NOT NULL,
+    district_id INT NOT NULL,
+    FOREIGN KEY (product_id)
+		REFERENCES products (id),
+	  FOREIGN KEY (district_id)
+		REFERENCES districts (id)
+);
+
+
+CREATE TABLE delivery_status (
+	  id TINYINT,
+    status_name VARCHAR(22) NOT NULL,
+    PRIMARY KEY(id)
+);
+
+INSERT INTO delivery_status (id, status_name) VALUES (0, 'pending_order');
+INSERT INTO delivery_status (id, status_name) VALUES (1, 'packaging_process');
+INSERT INTO delivery_status (id, status_name) VALUES (2, 'handed_over_to_carrier');
+INSERT INTO delivery_status (id, status_name) VALUES (3, 'delivered ');
+
+
+CREATE TABLE cart_table (
+	  id INT AUTO_INCREMENT,
+	  customer_id INT NOT NULL,
+    product_id INT NOT NULL,
+    vendor_id INT NOT NULL,
+    purchase_quantity INT NOT NULL,
+    product_retail_price FLOAT NOT NULL,
+    total_price FLOAT NOT NULL,
+    district_id INT NOT NULL,
+    customer_number VARCHAR(15) DEFAULT NULL,
+    purchased_on DATE NOT NULL,
+    delivery_status_id TINYINT DEFAULT 0,
+    delivery_address TEXT NOT NULL,
+    PRIMARY KEY (id),
+    FOREIGN KEY (customer_id)
+		REFERENCES users (id),
+    FOREIGN KEY (product_id)
+		REFERENCES products (id),
+	  FOREIGN KEY (vendor_id)
+		REFERENCES users (id),
+	  FOREIGN KEY (district_id)
+		REFERENCES districts (id),
+	  FOREIGN KEY (delivery_status_id)
+		REFERENCES delivery_status (id)
+);
