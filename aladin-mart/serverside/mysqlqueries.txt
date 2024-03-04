@@ -107,13 +107,14 @@ CREATE TABLE questions_and_answers (
 );
 
 
-[Run serverside/districtadding.php]
-
 CREATE TABLE districts (
     id INT AUTO_INCREMENT,
     district_name VARCHAR(12) NOT NULL,
     PRIMARY KEY (id)
 );
+
+
+[Run serverside/districtadding.php]
 
 
 CREATE TABLE product_delivery_locations (
